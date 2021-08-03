@@ -2,7 +2,7 @@ import os,sys
 from collections import defaultdict
 
 input_file = sys.argv[1]
-conll_file = sys.argv[2]
+original_file = sys.argv[2]
 output_file = sys.argv[3]
 
 all_words = []
@@ -45,30 +45,29 @@ for line in open(input_file).readlines():
     line_no += 1
 assert len(all_words) == line_no
 # print(all_words)
-print(len(all_words))
+#print(all_words)
+#print(index_token)
 
 new_file = []
-sent_no = 0
-sen = []
-for line in open(conll_file).readlines():
-    line = line.strip()
+file_position = 0
+
+for line in open(original_file).readlines():
     if line.startswith("#begin"):
         new_file.append(line)
         continue
-    if line.startswith("#end"):
+    elif line.startswith("#end"):
         new_file.append(line)
         continue
-    if len(line) == 0:
-        if all_words[sent_no] != []:
-            for word_index in all_words[sent_no]:
-                ori, token = all_words[sent_no][word_index]
-                sen[word_index] = sen[word_index].replace(ori, token,1)
-        new_file.extend(sen)
-        new_file.append(" ")
-        sen = []
-        sent_no += 1
-        continue
-    sen.append(line)
+    elif len(line) != 0:
+        words = line.split()
+        if all_words[file_position] != []:
+            for word_index in all_words[file_position]:
+                ori, token = all_words[file_position][word_index]
+                words[word_index] = words[word_index].replace(ori, token,1)
+        #print(words)
+        new_file.append(" ".join(words))
+    file_position += 1
+#print(new_file)
 
 with open(output_file, 'w') as f:
     for line in new_file:
